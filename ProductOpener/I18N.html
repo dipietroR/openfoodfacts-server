@@ -1,4 +1,4 @@
-<html><head><title>ProductOpener::Recipes</title>
+<html><head><title>ProductOpener::I18N</title>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" >
 <link rel="stylesheet" title="blkbluw" type="text/css" href="../_blkbluw.css" media="all" >
 <link rel="alternate stylesheet" title="blkmagw" type="text/css" href="../_blkmagw.css" media="all" >
@@ -42,24 +42,15 @@
   <li class='indexItem indexItem1'><a href='#DESCRIPTION'>DESCRIPTION</a>
   <li class='indexItem indexItem1'><a href='#FUNCTIONS'>FUNCTIONS</a>
   <ul   class='indexList indexList2'>
-    <li class='indexItem indexItem2'><a href='#compute_product_recipe(_%24product_ref%2C_%24parent_ingredients_ref_)'>compute_product_recipe( $product_ref, $parent_ingredients_ref )</a>
+    <li class='indexItem indexItem2'><a href='#read_po_files()'>read_po_files()</a>
     <ul   class='indexList indexList3'>
       <li class='indexItem indexItem3'><a href='#Arguments'>Arguments</a>
-      <ul   class='indexList indexList4'>
-        <li class='indexItem indexItem4'><a href='#product_reference_%24product_ref'>product reference $product_ref</a>
-        <li class='indexItem indexItem4'><a href='#list_of_parent_ingredients_%24parent_ingredients_ref'>list of parent ingredients $parent_ingredients_ref</a>
-      </ul>
       <li class='indexItem indexItem3'><a href='#Return_values'>Return values</a>
     </ul>
-    <li class='indexItem indexItem2'><a href='#add_product_recipe_to_set(_%24recipes_ref%2C_%24product_ref%2C_%24recipe_ref_)'>add_product_recipe_to_set( $recipes_ref, $product_ref, $recipe_ref )</a>
+    <li class='indexItem indexItem2'><a href='#split_tags()'>split_tags()</a>
     <ul   class='indexList indexList3'>
       <li class='indexItem indexItem3'><a href='#Arguments'>Arguments</a>
-      <li class='indexItem indexItem3'><a href='#Return_value'>Return value</a>
-    </ul>
-    <li class='indexItem indexItem2'><a href='#analyze_recipes(_%24recipes_ref%2C_%24parent_ingredients_ref_)'>analyze_recipes( $recipes_ref, $parent_ingredients_ref )</a>
-    <ul   class='indexList indexList3'>
-      <li class='indexItem indexItem3'><a href='#Arguments'>Arguments</a>
-      <li class='indexItem indexItem3'><a href='#Return_value'>Return value</a>
+      <li class='indexItem indexItem3'><a href='#Return_values'>Return values</a>
     </ul>
   </ul>
 </ul>
@@ -69,100 +60,69 @@
 name="NAME"
 >NAME</a></h1>
 
-<p>ProductOpener::Recipes - Analyze the distribution of ingredients in a set of products</p>
+<p>ProductOpener::I18N - Reads the .po files from a certain directory and processes them.</p>
 
 <h1><a class='u' href='#___top' title='click to go to top of document'
 name="SYNOPSIS"
 >SYNOPSIS</a></h1>
 
-<p>This module contains functions to compute the distribution of specific ingredients in a specified set of products.</p>
-
-<p>For instance,
-one can compute the distribution of water,
-sugar and fruits for products in the fruit nectars category.</p>
-
-<p>Functions in this module can be called through scripts for batch processing,
-and/or they could also be called for realtime analysis through the API or web interface (for a small enough set of products).</p>
+<p><code>ProductOpener::I18N</code> is used to read all &#34;.po&#34; files from a certain directory and merge them in one hash.
+The singular &#38; plural entries are seperated into two hashes.</p>
 
 <h1><a class='u' href='#___top' title='click to go to top of document'
 name="DESCRIPTION"
 >DESCRIPTION</a></h1>
 
-<p>The ingredients list is first analyzed with the Ingredients.pm module to identify each ingredient and estimate the percentage of each ingredient.</p>
-
-<p>Then each ingredient is matched against the specified list of parents ingredients.
-(e.g.
-if we want the distribution of water,
-sugar and fruits,
-&#34;apple&#34; will be mapped to fruits.)</p>
+<p>The module implements the functionality to read and process the .po files from a certain directory.
+The .po files are read and then merged into a single hash which is then seperated into two hashes.
+One of these hashes have all plural entries and the other one has all singular entries.
+The functions used in this module take the directory to look for the .po files and returns two hashrefs.</p>
 
 <h1><a class='u' href='#___top' title='click to go to top of document'
 name="FUNCTIONS"
 >FUNCTIONS</a></h1>
 
 <h2><a class='u' href='#___top' title='click to go to top of document'
-name="compute_product_recipe(_$product_ref,_$parent_ingredients_ref_)"
->compute_product_recipe( $product_ref,
-$parent_ingredients_ref )</a></h2>
+name="read_po_files()"
+>read_po_files()</a></h2>
 
-<p>Given a list of parent ingredients,
-analyze the ingredients of the parent to compute the percentage of each parent ingredient.</p>
+<p><code>read_po_files()</code> takes directory of the .po files as an input parameter,
+reads and merges them in one hash That hash is returned as a reference.
+(Done to spare the stack) Returning a reference uses a bit less memory since there&#39;s no copy.
+This function also cleans up the %Lexicon from gettext metadata and cleans up the empty values that are put in .po files by Crowdin when the string is not translated.</p>
 
 <h3><a class='u' href='#___top' title='click to go to top of document'
 name="Arguments"
 >Arguments</a></h3>
 
-<h4><a class='u' href='#___top' title='click to go to top of document'
-name="product_reference_$product_ref"
->product reference $product_ref</a></h4>
-
-<p>Loaded from the MongoDB database,
-Storable files,
-or the OFF API.</p>
-
-<h4><a class='u' href='#___top' title='click to go to top of document'
-name="list_of_parent_ingredients_$parent_ingredients_ref"
->list of parent ingredients $parent_ingredients_ref</a></h4>
-
-<p>Reference to an array of canonicalized ingredients.</p>
+<p>The directory containing .po files are passed as an argument.</p>
 
 <h3><a class='u' href='#___top' title='click to go to top of document'
 name="Return_values"
 >Return values</a></h3>
 
-<p>Percentages are returned in a hash that contains the parent ingredients canonicalized ids as the key,
-and the percentage as a value.</p>
-
-<p>2 extra keys are also returned:</p>
-
-<p>- &#34;unknown&#34;: for ingredients that are not known in the taxonomy - &#34;other&#34;: for ingredients that are known but are not children of any of the specified parent ingredients.</p>
+<p>Returns a reference to a hash on successful execution.</p>
 
 <h2><a class='u' href='#___top' title='click to go to top of document'
-name="add_product_recipe_to_set(_$recipes_ref,_$product_ref,_$recipe_ref_)"
->add_product_recipe_to_set( $recipes_ref,
-$product_ref,
-$recipe_ref )</a></h2>
+name="split_tags()"
+>split_tags()</a></h2>
+
+<p><code>split_tags()</code> takes the hashref returned by read_po_files as input parameter seperates it into two hashes seperated by if they are singular or plural,
+respectively and returns them as 2 hashrefs.</p>
 
 <h3><a class='u' href='#___top' title='click to go to top of document'
 name="Arguments"
 >Arguments</a></h3>
 
-<h3><a class='u' href='#___top' title='click to go to top of document'
-name="Return_value"
->Return value</a></h3>
-
-<h2><a class='u' href='#___top' title='click to go to top of document'
-name="analyze_recipes(_$recipes_ref,_$parent_ingredients_ref_)"
->analyze_recipes( $recipes_ref,
-$parent_ingredients_ref )</a></h2>
+<p>A hash is passed as an argument.</p>
 
 <h3><a class='u' href='#___top' title='click to go to top of document'
-name="Arguments"
->Arguments</a></h3>
+name="Return_values"
+>Return values</a></h3>
 
-<h3><a class='u' href='#___top' title='click to go to top of document'
-name="Return_value"
->Return value</a></h3>
+<p>If the function executes successfully it returns two hash references.
+If the tags are malformed,
+it throws a warning.</p>
 <p class="backlinkbottom"><b><a name="___bottom" href="../index.html" title="All Documents">&lt;&lt;</a></b></p>
 
 <!-- end doc -->

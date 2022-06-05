@@ -34,8 +34,7 @@ is( display_date_tag($t), '<time datetime="2016-08-27T12:08:49">27. August 2016 
 # issue # 1960 - negative query lost during pagination and in other links
 my $link = "/country/spain";
 my $tag_prefix = "-";
-is ( add_tag_prefix_to_link($link,$tag_prefix),"/country/in");
-#is ( add_tag_prefix_to_link($link,$tag_prefix),"/country/-spain");
+is ( add_tag_prefix_to_link($link,$tag_prefix),"/country/-spain");
 
 $link = "/country/spain/city/madrid";
 $tag_prefix = "-";
@@ -44,6 +43,16 @@ is ( add_tag_prefix_to_link($link,$tag_prefix),"/country/spain/city/-madrid");
 $link = "/spain";
 $tag_prefix = "-";
 is ( add_tag_prefix_to_link($link,$tag_prefix),"/-spain");
+
+$request_ref->{current_link} = '/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=24';
+$count = 25
+$limit = 24
+$page = 1
+#search query
+is ( display_pagination( $request_ref , $count, $limit, $page), '</ul> <ul id="pages" class="pagination"><li class="unavailable">Pages:</li><li class="current"><a href="">1</a></li><li><a href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=24/2">2</a></li><li><a href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=24/2" rel="next$nofollow">Next</a></li><li class="unavailable">(24 products per page)</li></ul> ') ;
+#label
+$request_ref->{current_link} = '/label/organic';
+is ( display_pagination( $request_ref , $count, $limit, $page), '</ul> <ul id="pages" class="pagination"><li class="unavailable">Pages:</li><li class="current"><a href="">1</a></li><li><a href="/label/organic/2">2</a></li><li><a href="/label/organic/2" rel="next$nofollow">Next</a></li><li class="unavailable">(24 products per page)</li></ul> ');
 
 $lc = 'en';
 my $product_ref = {

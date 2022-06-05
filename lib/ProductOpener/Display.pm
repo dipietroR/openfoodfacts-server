@@ -5357,6 +5357,14 @@ sub search_and_display_products($$$$$) {
 		$template_data_ref->{page_limit} = $limit;
 		$template_data_ref->{page} = $page;
 		$template_data_ref->{current_link} = $request_ref->{current_link};
+		my $foo->{current_link} = '/label/organic';
+		#my $foo->{current_link} = '/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=24';
+		my $pagination = display_pagination($foo, 25, $limit, $page);
+		#my $pagination = display_pagination($request_ref, 25, $limit, $page);
+		#my $pagination = display_pagination($request_ref, $count, $limit, $page);
+		$log->debug("pagination logs here 2", { pagination => $pagination }) if $log->is_debug();
+		$log->debug("pagination logs here 2", { count => $count, limit => $limit, page => $page }) if $log->is_debug();
+		$log->debug("pagination logs here 2", { current_link => $request_ref->{current_link}, groupby_tagtype => $request_ref->{groupby_tagtype}, product_changes_saved => $request_ref->{product_changes_saved}, sort_by => $request_ref->{sort_by}, jqm_loadmore => $request_ref->{jqm_loadmore} }) if $log->is_debug();
 		$template_data_ref->{pagination} = display_pagination($request_ref, $count, $limit, $page);
 	}
 
@@ -10593,6 +10601,7 @@ sub display_recent_changes {
 
 
 	$template_data_ref_changes->{changes} = \@changes;
+	$log->debug("pagination logs here 3", {}) if $log->is_debug();
 	$template_data_ref_changes->{display_pagination} =  display_pagination($request_ref, $count, $limit, $page);
 	process_template('web/common/includes/display_recent_changes.tt.html', $template_data_ref_changes, \$html) || ($html .= 'template error: ' . $tt->error());
 
